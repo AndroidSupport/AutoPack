@@ -1,0 +1,2 @@
+include ':app', ':AutoPack'
+rootProject.name='AutoPackDemo'
