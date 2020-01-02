@@ -5,12 +5,8 @@ apply plugin: 'java-library'
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    api ('com.tencentcloudapi:tencentcloud-sdk-java:3.0.93'){
-        transitive = true
-    }
-    api ('io.reactivex.rxjava2:rxjava:2.2.3'){
-        transitive = true
-    }
+    api 'com.tencentcloudapi:tencentcloud-sdk-java:3.0.93'
+    api 'io.reactivex.rxjava2:rxjava:2.2.3'
 }
 
 group='com.uniquext.plugin'
