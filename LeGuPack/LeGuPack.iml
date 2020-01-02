@@ -31,6 +31,13 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="Gradle: tencentcloud-sdk-java-3.0.93" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: rxjava-2.2.3" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: okhttp-2.5.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: gson-2.2.4" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: jaxb-api-2.3.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: reactive-streams-1.0.2" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: okio-1.6.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: gradle-api-5.4.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: groovy-all-1.0-2.5.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: gradle-installation-beacon-5.4.1" level="project" />

@@ -1,0 +1,26 @@
+//apply plugin: 'legu-pack'
+buildscript {
+    repositories {
+        maven {
+            url uri('../publish')
+        }
+    }
+    dependencies {
+//        classpath 'com.uniquext.plugin:LeGuPack:1.0.0'
+    }
+}
+
+//apkConfigs {
+//
+//    apkFolder file("../app/app_key_store")
+//    reinforcePrefix "reinforcePrefix"
+//    signPrefix "signPrefix"
+//
+//    signature {
+//        storeFile file("../app/app_key_store") // as默认的keystore
+//        storePassword "yi3634132" // keystore 默认的打开密码
+//        keyAlias "key0" // 默认的别名
+//        keyPassword "yi3634132" // 默认的别名密码
+//    }
+//
+//}
