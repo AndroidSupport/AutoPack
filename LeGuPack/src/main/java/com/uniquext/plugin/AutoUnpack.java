@@ -2,12 +2,15 @@ package com.uniquext.plugin;
 
 
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
-import com.uniquext.plugin.download.HttpHelper;
-import com.uniquext.plugin.download.UploadException;
 import com.uniquext.plugin.extension.ApkConfigs;
+import com.uniquext.plugin.http.HttpHelper;
+import com.uniquext.plugin.http.exception.DownloadException;
+import com.uniquext.plugin.http.exception.UploadException;
 import com.uniquext.plugin.reinforce.ReinforceResult;
 import com.uniquext.plugin.reinforce.Reinforcer;
+import com.uniquext.plugin.util.Utils;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +24,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class AutoUnpack {
 
-    public static final String TAG = "LeGuPack";
+    private static final String TAG = "LeGuPack";
 
     public static ApkConfigs mApkConfigs = null;
 
@@ -42,10 +45,12 @@ public class AutoUnpack {
             Observable
                     .fromArray(Objects.requireNonNull(mApkConfigs.apkFolder.listFiles()))
                     .filter(file -> file.isFile() && file.getName().toLowerCase().endsWith(".apk"))
-                    .map(file -> new AppInfo(file.getName()))
+                    .map(AutoUnpack::transform)
                     .doOnNext(AutoUnpack::upload)
-                    .flatMap((Function<AppInfo, ObservableSource<AppInfo>>) AutoUnpack::reinforce)
-                    .onErrorResumeNext((Function<Throwable, ObservableSource<AppInfo>>) throwable -> {
+                    .flatMap((Function<ItemApkInfo, ObservableSource<ItemApkInfo>>) AutoUnpack::reinforce)
+                    .doOnNext(AutoUnpack::download)
+                    .doOnNext(AutoUnpack::signature)
+                    .onErrorResumeNext((Function<Throwable, ObservableSource<ItemApkInfo>>) throwable -> {
                         if (throwable instanceof UploadException) {
                             System.out.println(String.format(Locale.CHINA, "[%s] The apk upload failed.", AutoUnpack.TAG));
                         } else if (throwable instanceof TencentCloudSDKException) {
@@ -54,134 +59,91 @@ public class AutoUnpack {
                         throwable.printStackTrace();
                         return Observable.empty();
                     })
-
-                    .subscribe(new Observer<AppInfo>() {
+                    .subscribe(new Observer<ItemApkInfo>() {
                         @Override
                         public void onSubscribe(Disposable d) {
 
                         }
 
                         @Override
-                        public void onNext(AppInfo appInfo) {
-
+                        public void onNext(ItemApkInfo apkInfo) {
+                            System.out.println(String.format(Locale.CHINA, "[%s] %s processing completed.", AutoUnpack.TAG, apkInfo.getSourceName()));
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            e.printStackTrace();
+                            System.out.println(String.format(Locale.CHINA, "[%s] has error.", AutoUnpack.TAG));
                         }
 
                         @Override
                         public void onComplete() {
-
+                            System.out.println(String.format(Locale.CHINA, "[%s] is Finished.", AutoUnpack.TAG));
                         }
                     });
         }
     }
 
-    private static void upload(AppInfo appInfo) throws UploadException {
-        System.out.println("########## Upload");
-        System.out.println(String.format(Locale.CHINA, "[%s] %s is being uploaded. Please waiting...", AutoUnpack.TAG, appInfo.sourceName));
-        HttpHelper.getInstance().syncUpload(appInfo);
-        System.out.println(String.format(Locale.CHINA, "[%s] %s upload completed.", TAG, appInfo.sourceName));
+    /**
+     * 转换
+     */
+    private static ItemApkInfo transform(File file) {
+        ItemApkInfo apkInfo = new ItemApkInfo(file.getName());
+        apkInfo.setReinforceName(String.format(Locale.CHINA, "%s-%s", mApkConfigs.reinforcePrefix, file.getName()));
+        apkInfo.setSignName(String.format(Locale.CHINA, "%s-%s", mApkConfigs.signPrefix, file.getName()));
+        return apkInfo;
     }
 
-    private static ObservableSource<AppInfo> reinforce(AppInfo appInfo) throws TencentCloudSDKException {
-        System.out.println("########## Reinforce");
-        System.out.println(String.format(Locale.CHINA, "[%s] the apk %s starts to reinforce with LeGu.", AutoUnpack.TAG, appInfo.sourceName));
-        Reinforcer.getInstance().createShieldInstance(appInfo);
+    /**
+     * 上传
+     */
+    private static void upload(ItemApkInfo apkInfo) throws UploadException {
+        System.out.println("########## Upload # " + apkInfo.toString());
+        System.out.println(String.format(Locale.CHINA, "[%s] %s is being uploaded. Please waiting...", AutoUnpack.TAG, apkInfo.getSourceName()));
+        HttpHelper.getInstance().syncUpload(apkInfo);
+        System.out.println(String.format(Locale.CHINA, "[%s] %s upload completed.", TAG, apkInfo.getSourceName()));
+    }
+
+    /**
+     * 加固
+     */
+    private static ObservableSource<ItemApkInfo> reinforce(ItemApkInfo apkInfo) throws TencentCloudSDKException {
+        System.out.println("########## Reinforce # " + apkInfo.toString());
+        System.out.println(String.format(Locale.CHINA, "[%s] the apk %s starts to reinforce with LeGu.", AutoUnpack.TAG, apkInfo.getSourceName()));
+        Reinforcer.getInstance().createShieldInstance(apkInfo);
         return Observable.merge(Observable.just(1L), Observable.interval(3000L, TimeUnit.MILLISECONDS, Schedulers.trampoline()))
-                .flatMap((Function<Long, ObservableSource<ReinforceResult>>) aLong -> Observable.just(Reinforcer.getInstance().describeShieldResult(appInfo.itemId)))
+                .flatMap((Function<Long, ObservableSource<ReinforceResult>>) aLong -> Observable.just(Reinforcer.getInstance().describeShieldResult(apkInfo.getItemId())))
                 .filter(reinforceResult -> {
-                    System.out.println(String.format(Locale.CHINA, "[%s] the apk %s current status is %d -> %s", AutoUnpack.TAG, appInfo.sourceName, reinforceResult.status, reinforceResult.statusDesc));
+                    System.out.println(String.format(Locale.CHINA, "[%s] the apk %s current status is %d -> %s", AutoUnpack.TAG, apkInfo.getSourceName(), reinforceResult.status, reinforceResult.statusDesc));
                     return reinforceResult.status != 2;
                 })
                 .takeUntil(reinforceResult -> {
-                    System.out.println(String.format(Locale.CHINA, "[%s] the apk %s reinforce completed", AutoUnpack.TAG, appInfo.sourceName));
+                    System.out.println(String.format(Locale.CHINA, "[%s] the apk %s reinforce completed", AutoUnpack.TAG, apkInfo.getSourceName()));
                     return reinforceResult.status != 2;
                 })
-                .map(reinforceResult -> appInfo);
+                .map(reinforceResult -> {
+                    apkInfo.setDownloadUrl(reinforceResult.url);
+                    return apkInfo;
+                });
     }
 
-
-    public static void t2(final AppInfo appInfo) {
-//        final String apkName = appInfo.name;
-//        Observable.just(appInfo)
-//                .flatMap(new Function<AppInfo, ObservableSource<String>>() {
-//                    @Override
-//                    public ObservableSource<String> apply(AppInfo appInfo) throws Exception {
-//                        System.out.println(String.format(Locale.CHINA, "#[AutoUnpack:%s] AutoUnpack starts to reinforce the apk with LeGu.", apkName));
-//                        return Observable.just(Reinforcer.getInstance().createShieldInstance(appInfo)).retry(3);
-//                    }
-//                })
-//                .flatMap(new Function<String, ObservableSource<ReinforceResult>>() {
-//                    @Override
-//                    public ObservableSource<ReinforceResult> apply(String s) throws Exception {
-//                        final String itemId = s;
-//                        System.out.println(String.format(Locale.CHINA, "#[AutoUnpack:%s] The itemId -> %s", apkName, itemId));
-//                        return Observable.merge(Observable.just(1L), Observable.interval(3000L, TimeUnit.MILLISECONDS, Schedulers.trampoline()))
-//                                .flatMap(new Function<Long, ObservableSource<ReinforceResult>>() {
-//                                    @Override
-//                                    public ObservableSource<ReinforceResult> apply(Long aLong) throws Exception {
-//                                        return Observable.just(Reinforcer.getInstance().describeShieldResult(itemId));
-//                                    }
-//                                })
-//                                .filter(new Predicate<ReinforceResult>() {
-//                                    @Override
-//                                    public boolean test(ReinforceResult reinforceResult) throws Exception {
-//                                        System.out.println(String.format(Locale.CHINA, "#[AutoUnpack:%s] Current status -> %s", apkName, reinforceResult.status));
-//                                        return reinforceResult.status != 2;
-//                                    }
-//                                })
-//                                .takeUntil(new Predicate<ReinforceResult>() {
-//                                    @Override
-//                                    public boolean test(ReinforceResult reinforceResult) throws Exception {
-//                                        return reinforceResult.status != 2;
-//                                    }
-//                                });
-//
-//                    }
-//                })
-//                .flatMap(new Function<ReinforceResult, ObservableSource<ReinforceResult>>() {
-//                    @Override
-//                    public ObservableSource<ReinforceResult> apply(ReinforceResult reinforceResult) throws Exception {
-//                        if (reinforceResult.status == 1) {
-//                            return Observable.just(reinforceResult);
-//                        } else {
-//                            System.out.println(String.format(Locale.CHINA, "#[AutoUnpack:%s] Reinforce exception. Error -> %s", apkName, reinforceResult.statusDesc));
-//                            return Observable.error(new Throwable());
-//                        }
-//                    }
-//                })
-//                .retry(3)
-//                .map(new Function<ReinforceResult, String>() {
-//                    @Override
-//                    public String apply(ReinforceResult reinforceResult) throws Exception {
-//                        System.out.println(String.format(Locale.CHINA, "#[AutoUnpack:%s] Reinforce finish. DownloadUrl -> %s", apkName, reinforceResult.url));
-//                        return reinforceResult.url;
-//                    }
-//                })
-//                .subscribe(new Observer<String>() {
-//                    @Override
-//                    public void onSubscribe(Disposable disposable) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNext(String s) {
-//                        appInfo.downloadUrl = s;
-//                        Downloader.getInstance().download(appInfo);
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable throwable) {
-//                        throwable.printStackTrace();
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
+    /**
+     * 下载
+     */
+    private static void download(ItemApkInfo apkInfo) throws DownloadException {
+        System.out.println("########## Download # " + apkInfo.toString());
+        System.out.println(String.format(Locale.CHINA, "[%s] %s is downloading. Please waiting...", AutoUnpack.TAG, apkInfo.getReinforceName()));
+        HttpHelper.getInstance().syncDownload(apkInfo);
+        System.out.println(String.format(Locale.CHINA, "[%s] %s download completed.", TAG, apkInfo.getReinforceName()));
     }
+
+    /**
+     * 重签名
+     */
+    private static void signature(ItemApkInfo apkInfo) {
+        System.out.println("########## Signing # " + apkInfo.toString());
+        System.out.println(String.format(Locale.CHINA, "[%s] %s is signing. Please waiting...", AutoUnpack.TAG, apkInfo.getReinforceName()));
+        Utils.signature(apkInfo.getReinforceApkPath(), String.format(Locale.CHINA, "%s/%s/%s", mApkConfigs.apkFolder.getAbsolutePath(), "sign", apkInfo.getSignName()));
+        System.out.println(String.format(Locale.CHINA, "[%s] %s signed and renamed %s.", TAG, apkInfo.getReinforceName(), apkInfo.getSignName()));
+    }
+
 }

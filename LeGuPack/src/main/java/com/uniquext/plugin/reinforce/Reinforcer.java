@@ -9,7 +9,7 @@ import com.tencentcloudapi.ms.v20180408.models.CreateShieldInstanceRequest;
 import com.tencentcloudapi.ms.v20180408.models.CreateShieldInstanceResponse;
 import com.tencentcloudapi.ms.v20180408.models.DescribeShieldResultRequest;
 import com.tencentcloudapi.ms.v20180408.models.DescribeShieldResultResponse;
-import com.uniquext.plugin.AppInfo;
+import com.uniquext.plugin.ItemApkInfo;
 
 import java.util.Locale;
 
@@ -37,11 +37,11 @@ public class Reinforcer {
         msClient = new MsClient(credential, "", clientProfile);
     }
 
-    public void createShieldInstance(AppInfo appInfo) throws TencentCloudSDKException {
-        System.out.println(getAppInfoParams(appInfo));
-        CreateShieldInstanceRequest req = CreateShieldInstanceRequest.fromJsonString(getAppInfoParams(appInfo), CreateShieldInstanceRequest.class);
+    public void createShieldInstance(ItemApkInfo apkInfo) throws TencentCloudSDKException {
+        System.out.println(getAppInfoParams(apkInfo));
+        CreateShieldInstanceRequest req = CreateShieldInstanceRequest.fromJsonString(getAppInfoParams(apkInfo), CreateShieldInstanceRequest.class);
         CreateShieldInstanceResponse resp = msClient.CreateShieldInstance(req);
-        appInfo.itemId = resp.getItemId();
+        apkInfo.setItemId(resp.getItemId());
     }
 
     public ReinforceResult describeShieldResult(String itemId) throws TencentCloudSDKException {
@@ -54,8 +54,8 @@ public class Reinforcer {
         );
     }
 
-    private String getAppInfoParams(AppInfo appInfo) {
-        return String.format(Locale.CHINA, APP_INFO_FORMAT, appInfo.remoteUrl, appInfo.md5);
+    private String getAppInfoParams(ItemApkInfo apkInfo) {
+        return String.format(Locale.CHINA, APP_INFO_FORMAT, apkInfo.getRemoteUrl(), apkInfo.getMd5());
     }
 
     private String getItemIdParams(String itemId) {

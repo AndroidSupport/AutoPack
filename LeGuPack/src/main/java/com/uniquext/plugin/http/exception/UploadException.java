@@ -1,4 +1,4 @@
-package com.uniquext.plugin.download;
+package com.uniquext.plugin.http.exception;
 
 import java.io.IOException;
 
