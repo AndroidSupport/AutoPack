@@ -1,2 +1,2 @@
-include ':app', ':AutoPack'
+include /*':app', */':LeGuPack', ':PluginTest'/*, ':lib'*/
 rootProject.name='AutoPackDemo'

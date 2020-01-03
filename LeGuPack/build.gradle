@@ -1,16 +1,15 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
-apply plugin: 'java-library'
 
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    api 'com.tencentcloudapi:tencentcloud-sdk-java:3.0.93'
-    api 'io.reactivex.rxjava2:rxjava:2.2.3'
+    implementation 'com.tencentcloudapi:tencentcloud-sdk-java:3.0.93'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.3'
 }
 
 group='com.uniquext.plugin'
-version='1.0.0'
+version='1.0.3'
 
 uploadArchives{
     repositories {
