@@ -10,7 +10,6 @@ public class ApkConfigs {
     public String reinforcePrefix;
     public String signPrefix;
     public SignConfigs signConfigs = new SignConfigs();
-    public SecretCofigs secretConfigs = new SecretCofigs();
 
     public void apkFolder(File apkFolder) {
         this.apkFolder = apkFolder;
@@ -28,7 +27,4 @@ public class ApkConfigs {
         action.execute(signConfigs);
     }
 
-    public void secret(Action<SecretCofigs> action) {
-        action.execute(secretConfigs);
-    }
 }

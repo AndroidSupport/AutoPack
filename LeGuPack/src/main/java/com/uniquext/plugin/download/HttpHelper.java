@@ -54,28 +54,6 @@ public class HttpHelper {
             throw new UploadException();
         }
 
-
-
-
-//        mOkHttpClient.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Request request, IOException e) {
-//                System.out.println(String.format(Locale.CHINA, "[%s] %s upload failed.", AutoUnpack.TAG, file.getName()));
-//                e.printStackTrace();
-//            }
-//
-//            @Override
-//            public void onResponse(Response response) throws IOException {
-//                if (response.isSuccessful()) {
-//                    AppInfo appInfo = new AppInfo()
-//
-//                    System.out.println("上传成功" + response.body().string());
-//                } else {
-//                    System.out.println("上传失败" + response.body().string());
-//                }
-//            }
-//        });
-
     }
 
     private File createFile(String localPath, String name) {

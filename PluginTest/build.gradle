@@ -8,13 +8,13 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.uniquext.plugin:LeGuPack:1.0.3'
+        classpath 'com.uniquext.plugin:LeGuPack:1.0.5'
     }
 }
 
 apkConfigs {
 
-    apkFolder file("../app/app_key_store")
+    apkFolder file("/Users/uniquext/Desktop/")
     reinforcePrefix "reinforcePrefix"
     signPrefix "signPrefix"
 
@@ -25,4 +25,9 @@ apkConfigs {
         keyPassword "yi3634132" // 默认的别名密码
     }
 
+}
+
+secretConfig {
+    secretId "AKIDLxTsBMBNExGSXVI6jGDMZhibO4e7umRU"
+    secretKey "AD9ziP7oOrOpBR2XvCMRNCvCNROE4qV3"
 }

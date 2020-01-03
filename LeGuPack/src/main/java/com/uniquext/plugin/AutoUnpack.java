@@ -17,7 +17,6 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 public class AutoUnpack {
@@ -40,13 +39,12 @@ public class AutoUnpack {
         if (apkConfigs.apkFolder == null || !apkConfigs.apkFolder.exists() || !apkConfigs.apkFolder.isDirectory()) {
             System.out.println(String.format(Locale.CHINA, "[%s] apkConfigs.apkFolder does not exists or is not a folder.", TAG));
         } else {
-            Reinforcer.getInstance().init(mApkConfigs.secretConfigs.secretId, mApkConfigs.secretConfigs.secretKey);
             Observable
                     .fromArray(Objects.requireNonNull(mApkConfigs.apkFolder.listFiles()))
                     .filter(file -> file.isFile() && file.getName().toLowerCase().endsWith(".apk"))
                     .map(file -> new AppInfo(file.getName()))
                     .doOnNext(AutoUnpack::upload)
-//                    .flatMap((Function<AppInfo, ObservableSource<AppInfo>>) AutoUnpack::reinforce)
+                    .flatMap((Function<AppInfo, ObservableSource<AppInfo>>) AutoUnpack::reinforce)
                     .onErrorResumeNext((Function<Throwable, ObservableSource<AppInfo>>) throwable -> {
                         if (throwable instanceof UploadException) {
                             System.out.println(String.format(Locale.CHINA, "[%s] The apk upload failed.", AutoUnpack.TAG));
@@ -98,12 +96,9 @@ public class AutoUnpack {
                     System.out.println(String.format(Locale.CHINA, "[%s] the apk %s current status is %d -> %s", AutoUnpack.TAG, appInfo.sourceName, reinforceResult.status, reinforceResult.statusDesc));
                     return reinforceResult.status != 2;
                 })
-                .takeUntil(new Predicate<ReinforceResult>() {
-                    @Override
-                    public boolean test(ReinforceResult reinforceResult) throws Exception {
-                        System.out.println(String.format(Locale.CHINA, "[%s] the apk %s reinforce completed", AutoUnpack.TAG, appInfo.sourceName));
-                        return reinforceResult.status != 2;
-                    }
+                .takeUntil(reinforceResult -> {
+                    System.out.println(String.format(Locale.CHINA, "[%s] the apk %s reinforce completed", AutoUnpack.TAG, appInfo.sourceName));
+                    return reinforceResult.status != 2;
                 })
                 .map(reinforceResult -> appInfo);
     }
