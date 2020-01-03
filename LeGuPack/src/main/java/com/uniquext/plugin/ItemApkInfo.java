@@ -77,7 +77,7 @@ public class ItemApkInfo {
 
     @Override
     public String toString() {
-        return "AppInfo{" +
+        return "ItemApkInfo{" +
                 "sourceName='" + sourceName + '\'' +
                 ", reinforceName='" + reinforceName + '\'' +
                 ", signName='" + signName + '\'' +

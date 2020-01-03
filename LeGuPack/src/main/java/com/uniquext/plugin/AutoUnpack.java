@@ -97,7 +97,7 @@ public class AutoUnpack {
      * 上传
      */
     private static void upload(ItemApkInfo apkInfo) throws UploadException {
-        System.out.println("########## Upload # " + apkInfo.toString());
+        System.out.println("########## Upload  " + apkInfo.toString());
         System.out.println(String.format(Locale.CHINA, "[%s] %s is being uploaded. Please waiting...", AutoUnpack.TAG, apkInfo.getSourceName()));
         HttpHelper.getInstance().syncUpload(apkInfo);
         System.out.println(String.format(Locale.CHINA, "[%s] %s upload completed.", TAG, apkInfo.getSourceName()));
@@ -107,7 +107,7 @@ public class AutoUnpack {
      * 加固
      */
     private static ObservableSource<ItemApkInfo> reinforce(ItemApkInfo apkInfo) throws TencentCloudSDKException {
-        System.out.println("########## Reinforce # " + apkInfo.toString());
+        System.out.println("########## Reinforce  " + apkInfo.toString());
         System.out.println(String.format(Locale.CHINA, "[%s] the apk %s starts to reinforce with LeGu.", AutoUnpack.TAG, apkInfo.getSourceName()));
         Reinforcer.getInstance().createShieldInstance(apkInfo);
         return Observable.merge(Observable.just(1L), Observable.interval(3000L, TimeUnit.MILLISECONDS, Schedulers.trampoline()))
@@ -130,7 +130,7 @@ public class AutoUnpack {
      * 下载
      */
     private static void download(ItemApkInfo apkInfo) throws DownloadException {
-        System.out.println("########## Download # " + apkInfo.toString());
+        System.out.println("########## Download  " + apkInfo.toString());
         System.out.println(String.format(Locale.CHINA, "[%s] %s is downloading. Please waiting...", AutoUnpack.TAG, apkInfo.getReinforceName()));
         HttpHelper.getInstance().syncDownload(apkInfo);
         System.out.println(String.format(Locale.CHINA, "[%s] %s download completed.", TAG, apkInfo.getReinforceName()));
@@ -139,10 +139,11 @@ public class AutoUnpack {
     /**
      * 重签名
      */
-    private static void signature(ItemApkInfo apkInfo) {
-        System.out.println("########## Signing # " + apkInfo.toString());
+    private static void signature(ItemApkInfo apkInfo) throws NullPointerException{
+        System.out.println("########## Signing  " + apkInfo.toString());
         System.out.println(String.format(Locale.CHINA, "[%s] %s is signing. Please waiting...", AutoUnpack.TAG, apkInfo.getReinforceName()));
-        Utils.signature(apkInfo.getReinforceApkPath(), String.format(Locale.CHINA, "%s/%s/%s", mApkConfigs.apkFolder.getAbsolutePath(), "sign", apkInfo.getSignName()));
+        File folder = Utils.createFolder(mApkConfigs.apkFolder, "sign");
+        Utils.signature(String.format(Locale.CHINA, "%s/%s", Objects.requireNonNull(folder).getAbsolutePath(), apkInfo.getSignName()), apkInfo.getReinforceApkPath());
         System.out.println(String.format(Locale.CHINA, "[%s] %s signed and renamed %s.", TAG, apkInfo.getReinforceName(), apkInfo.getSignName()));
     }
 

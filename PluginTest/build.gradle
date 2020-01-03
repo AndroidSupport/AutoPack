@@ -8,7 +8,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.uniquext.plugin:LeGuPack:1.1.0'
+        classpath 'com.uniquext.plugin:LeGuPack:1.1.1'
     }
 }
 
