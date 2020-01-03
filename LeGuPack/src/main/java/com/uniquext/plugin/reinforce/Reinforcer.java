@@ -16,7 +16,7 @@ import java.util.Locale;
 public class Reinforcer {
 
     private static final String END_POINT = "ms.tencentcloudapi.com";
-    private static final String APP_INFO_FORMAT = "{\"AppInfo\": {\"AppUrl\": \"%s\", \"AppMd5\": \"%s\"}, \"ServiceInfo\": {\"CallbackUrl\": \"null\"}}";
+    private static final String APP_INFO_FORMAT = "{\"AppInfo\": {\"AppUrl\": \"%s\", \"AppMd5\": \"%s\", \"FileName\": \"%s\"}, \"ServiceInfo\": {\"CallbackUrl\": \"null\"}}";
     private static final String ITEM_ID_FORMAT = "{\"ItemId\":\"%s\"}";
     private MsClient msClient = null;
 
@@ -55,7 +55,7 @@ public class Reinforcer {
     }
 
     private String getAppInfoParams(ItemApkInfo apkInfo) {
-        return String.format(Locale.CHINA, APP_INFO_FORMAT, apkInfo.getRemoteUrl(), apkInfo.getMd5());
+        return String.format(Locale.CHINA, APP_INFO_FORMAT, apkInfo.getRemoteUrl(), apkInfo.getMd5(), apkInfo.getSourceName());
     }
 
     private String getItemIdParams(String itemId) {
