@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'legu-pack'
 
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -17,28 +18,28 @@ android {
     }
 
     productFlavors {
-        likelytest {
-
-        }
+//        likelytest {
+//
+//        }
 
         //  小米
         XIAOMI {}
         //  华为
         HUAWEI {}
-        //  头条东信
-        toutiao_dongxin {}
-        //  应用宝
-        yingyongbao {}
-        //  百度
-        BAIDU {}
-        //  OPPO
-        OPPO {}
-        //  自然量
-        Organic {}
-        //  微博投放威斯顿
-        weibo_weisidun {}
-        //  知乎投放威斯顿
-        zhihu_weisidun {}
+//        //  头条东信
+//        toutiao_dongxin {}
+//        //  应用宝
+//        yingyongbao {}
+//        //  百度
+//        BAIDU {}
+//        //  OPPO
+//        OPPO {}
+//        //  自然量
+//        Organic {}
+//        //  微博投放威斯顿
+//        weibo_weisidun {}
+//        //  知乎投放威斯顿
+//        zhihu_weisidun {}
 
     }
 
@@ -65,11 +66,17 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            def dirName = project.rootDir.absolutePath + "/outputs/apk/" + variant.buildType.name
+            def dirName = getBuildTypePath(variant.buildType.name)
             variant.getPackageApplication().outputDirectory = new File(dirName)
             outputFileName = "${variant.flavorName}_${variant.buildType.name}__v${defaultConfig.versionName}.apk"
         }
     }
+}
+
+
+def getBuildTypePath(def type) {
+    def date = new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("GMT+08:00"))
+    return String.format(Locale.CHINA, "%s/outputs/%s/%s", project.rootDir.absolutePath, date, type)
 }
 
 buildscript {
@@ -81,7 +88,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.uniquext.plugin:LeGuPack:1.1.1'
+        classpath 'com.uniquext.plugin:LeGuPack:1.1.3'
     }
 }
 
@@ -96,7 +103,7 @@ dependencies {
 
 apkConfigs {
 
-    apkFolder file(project.rootDir.absolutePath + "/outputs/apk/release")
+    apkFolder file(getBuildTypePath("release"))
     reinforcePrefix "reinforce"
     signPrefix "sign"
 

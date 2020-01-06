@@ -42,6 +42,7 @@ public class AutoUnpack {
         if (apkConfigs.apkFolder == null || !apkConfigs.apkFolder.exists() || !apkConfigs.apkFolder.isDirectory()) {
             System.out.println(String.format(Locale.CHINA, "[%s] apkConfigs.apkFolder does not exists or is not a folder.", TAG));
         } else {
+            System.out.println("########## Folder  " + mApkConfigs.apkFolder.getAbsolutePath());
             Observable
                     .fromArray(Objects.requireNonNull(mApkConfigs.apkFolder.listFiles()))
                     .filter(file -> file.isFile() && file.getName().toLowerCase().endsWith(".apk"))
@@ -87,6 +88,7 @@ public class AutoUnpack {
      * 转换
      */
     private static ItemApkInfo transform(File file) {
+        System.out.println("########## APK  " + file.getAbsolutePath());
         ItemApkInfo apkInfo = new ItemApkInfo(file.getName());
         apkInfo.setReinforceName(String.format(Locale.CHINA, "%s-%s", mApkConfigs.reinforcePrefix, file.getName()));
         apkInfo.setSignName(String.format(Locale.CHINA, "%s-%s", mApkConfigs.signPrefix, file.getName()));
