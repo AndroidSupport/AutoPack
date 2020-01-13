@@ -1,5 +1,16 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.10.1"
+    }
+}
+
+apply plugin: "com.gradle.plugin-publish"
 apply plugin: 'groovy'
-apply plugin: 'maven'
 
 dependencies {
     implementation gradleApi()
@@ -11,10 +22,25 @@ dependencies {
 group='com.uniquext.plugin'
 version='1.2.0'
 
-uploadArchives{
-    repositories {
-        mavenDeployer {
-            repository(url: uri('../publish'))
+pluginBundle {
+    website = 'https://github.com/AndroidSupport/AutoPack'
+    vcsUrl = 'https://github.com/AndroidSupport/AutoPack.git'
+    description = '基于腾讯乐固的自动加固重签名插件'
+    tags = ['Android', 'Pack', 'LeGu', 'Reinforce']
+
+    plugins {
+        greetingsPlugin {
+            id = 'com.uniquext.legu-pack'
+            displayName = 'AutoPackPlugin'
         }
     }
 }
+
+//apply plugin: 'maven'
+//uploadArchives{
+//    repositories {
+//        mavenDeployer {
+//            repository(url: uri('../publish'))
+//        }
+//    }
+//}

@@ -36,6 +36,7 @@ public class AutoUnpack {
      * 加固
      * 下载
      * 重签名
+     * @param apkConfigs APK配置信息
      */
     public static void start(ApkConfigs apkConfigs) {
         mApkConfigs = apkConfigs;
