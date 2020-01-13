@@ -98,13 +98,14 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.uniquext.plugin:LeGuPack:1.1.3'
+        classpath 'com.uniquext.plugin:LeGuPack:1.2.0'
     }
 }
 
 apkConfigs {
 
     apkFolder file(getBuildTypePath("release"))
+    uploadHost "APK上传路径，服务器端不要加任何权限校验之类"
     reinforcePrefix "reinforce"
     signPrefix "sign"
 

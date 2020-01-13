@@ -21,7 +21,6 @@ import java.io.InputStream;
 
 public class HttpHelper {
 
-    private static final String UPLOAD_URL = "http://web-admin-test.percentcompany.com/api/app-version/upload-apk";
     private OkHttpClient mOkHttpClient;
 
 
@@ -40,7 +39,7 @@ public class HttpHelper {
                 .addFormDataPart("file", apkInfo.getSourceName(), body)
                 .build();
         Request request = new Request.Builder()
-                .url(UPLOAD_URL)
+                .url(AutoUnpack.mApkConfigs.uploadHost)
                 .addHeader("Content-Type", "multipart/form-data")
                 .post(requestBody)
                 .build();
