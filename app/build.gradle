@@ -24,7 +24,7 @@ android {
         //  小米
         XIAOMI {}
         //  华为
-        HUAWEI {}
+//        HUAWEI {}
 //        //  头条东信
 //        toutiao_dongxin {}
 //        //  应用宝
@@ -88,37 +88,38 @@ def getBuildTypePath(def type) {
 }
 
 
-apply plugin: 'legu-pack'
-buildscript {
-    repositories {
-        maven {
-            url uri('../publish')
-        }
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.uniquext.plugin:LeGuPack:1.2.0'
-    }
-}
-
-apkConfigs {
-
-    apkFolder file(getBuildTypePath("release"))
-    uploadHost "APK上传路径，服务器端不要加任何权限校验之类"
-    reinforcePrefix "reinforce"
-    signPrefix "sign"
-
-    signature {
-        storeFile file("app_key_store") // as默认的keystore
-        storePassword "yi3634132" // keystore 默认的打开密码
-        keyAlias "key0" // 默认的别名
-        keyPassword "yi3634132" // 默认的别名密码
-    }
-
-}
-
-secretConfig {
-    secretId "AKIDLxTsBMBNExGSXVI6jGDMZhibO4e7umRU"
-    secretKey "AD9ziP7oOrOpBR2XvCMRNCvCNROE4qV3"
-}
+//apply plugin: 'com.uniquext.legu-pack'
+//buildscript {
+//    repositories {
+//        maven {
+////            url uri('../publish')
+//            url "https://plugins.gradle.org/m2/"
+//        }
+//        google()
+//        jcenter()
+//    }
+//    dependencies {
+//        classpath 'com.uniquext.plugin:legu-pack:1.2.0'
+//    }
+//}
+//
+//apkConfigs {
+//
+//    apkFolder file(getBuildTypePath("release"))
+//    uploadHost "APK上传路径，服务器端不要加任何权限校验之类"
+//    reinforcePrefix "reinforce"
+//    signPrefix "sign"
+//
+//    signature {
+//        storeFile file("app_key_store") // as默认的keystore
+//        storePassword "yi3634132" // keystore 默认的打开密码
+//        keyAlias "key0" // 默认的别名
+//        keyPassword "yi3634132" // 默认的别名密码
+//    }
+//
+//}
+//
+//secretConfig {
+//    secretId "AKIDLxTsBMBNExGSXVI6jGDMZhibO4e7umRU"
+//    secretKey "AD9ziP7oOrOpBR2XvCMRNCvCNROE4qV3"
+//}

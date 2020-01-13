@@ -31,6 +31,8 @@ buildscript {
 apkConfigs {
     //  apk所在文件夹，会处理该文件夹下所有apk
     apkFolder file(project.rootDir.absolutePath)
+    //  response 返回格式{"code":200,"message":"操作成功","data":{"appUrl":"https://res-static.percentcompany.com/apk/2020/01/13/2beb191f24064388b6552bb7a79efbbb","md5":"a5f6653a810bcb18ef758f8c2534d9b1"}}
+    uploadHost "APK上传路径，服务器端不要加任何权限校验之类"
     //  加固后的APK前缀
     reinforcePrefix "reinforce"
     //  重签名后的APK前缀
@@ -46,7 +48,7 @@ apkConfigs {
 }
 
 secretConfig {
-    //  腾讯云 secretId 及 secretKey
+    //  腾讯云 乐固加固的 secretId 及 secretKey
     secretId "AKIDLxTsBMBNExGSXVI6jGDMZhibO4e7umRU"
     secretKey "AD9ziP7oOrOpBR2XvCMRNCvCNROE4qV3"
 }
