@@ -20,7 +20,7 @@ dependencies {
 }
 
 group='com.uniquext.plugin'
-version='1.2.0'
+version='1.2.1'
 
 pluginBundle {
     website = 'https://github.com/AndroidSupport/AutoPack'
@@ -36,11 +36,11 @@ pluginBundle {
     }
 }
 
-//apply plugin: 'maven'
-//uploadArchives{
-//    repositories {
-//        mavenDeployer {
-//            repository(url: uri('../publish'))
-//        }
-//    }
-//}
+apply plugin: 'maven'
+uploadArchives{
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../publish'))
+        }
+    }
+}

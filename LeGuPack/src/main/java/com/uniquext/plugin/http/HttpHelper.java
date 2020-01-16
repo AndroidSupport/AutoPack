@@ -8,8 +8,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.uniquext.plugin.ItemApkInfo;
 import com.uniquext.plugin.AutoUnpack;
+import com.uniquext.plugin.ItemApkInfo;
 import com.uniquext.plugin.http.exception.DownloadException;
 import com.uniquext.plugin.http.exception.UploadException;
 import com.uniquext.plugin.util.Utils;
@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class HttpHelper {
 
@@ -26,6 +28,9 @@ public class HttpHelper {
 
     public HttpHelper() {
         mOkHttpClient = new OkHttpClient();
+        mOkHttpClient.setReadTimeout(60 * 1000L, TimeUnit.MILLISECONDS);
+        mOkHttpClient.setWriteTimeout(60 * 1000L, TimeUnit.MILLISECONDS);
+        mOkHttpClient.setConnectTimeout(60 * 1000L, TimeUnit.MILLISECONDS);
     }
 
     public static HttpHelper getInstance() {
@@ -45,10 +50,13 @@ public class HttpHelper {
                 .build();
         try {
             Response response = mOkHttpClient.newCall(request).execute();
-            JsonObject jsonObject = new JsonParser().parse(response.body().string()).getAsJsonObject().getAsJsonObject("data");
+            String result = response.body().string();
+            System.out.println(String.format(Locale.CHINA, "[LeGuPack] Upload Result: %s", request));
+            JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject().getAsJsonObject("data");
             apkInfo.setRemoteUrl(jsonObject.get("appUrl").getAsString());
             apkInfo.setMd5(jsonObject.get("md5").getAsString());
         } catch (IOException e) {
+            e.printStackTrace();
             throw new UploadException();
         }
     }
@@ -75,6 +83,7 @@ public class HttpHelper {
             fos.close();
             is.close();
         } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
             throw new DownloadException();
         }
     }
